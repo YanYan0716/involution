@@ -108,7 +108,7 @@ class ResLayer(layers.Layer):
                 )
             downsample.extend([
                 keras.layers.Conv2D(filters=out_channels, kernel_size=1, strides=conv_stride, use_bias=False)
-                keras.layers.BatchNormalization()[]
+                keras.layers.BatchNormalization()
             ])
 
 
