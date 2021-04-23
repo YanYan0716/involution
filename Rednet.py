@@ -91,7 +91,7 @@ class ResLayer(layers.Layer):
             expansion=None,
             stride=1,
             avg_down=False,
-
+            **kwargs,
     ):
         super(ResLayer, self).__init__()
         self.block = block
@@ -108,9 +108,27 @@ class ResLayer(layers.Layer):
                 )
             downsample.extend([
                 keras.layers.Conv2D(filters=out_channels, kernel_size=1, strides=conv_stride, use_bias=False)
-                keras.layers.BatchNormalization()
+                keras.layers.BatchNormalization(),
             ])
 
+            layers = []
+            layers.append(
+                block(
+                    out_channels=out_channels,
+                    expansion=self.expansion,
+                    stride=stride,
+                    downsample=downsample,
+                )
+            )
+            for i in range(1, num_blocks):
+                layers.append(
+                    block(
+                        out_channels=out_channels,
+                        expansion=self.expansion,
+                        stride=1,
+                        downsample=downsample
+                    )
+                )
 
     def call(self, inputs, **kwargs):
         pass
@@ -147,7 +165,20 @@ class RedNet(models.Model):
         self.stage_blocks = stage_blocks[: num_stages]
         self.strides = strides
         self.dilations = dilations
+        self.expansion = get_expansion(self.block, expansion)
+        _out_channels = base_channels * self.expansion
         for i, num_blocks in enumerate(self.stage_blocks):
             stride = self.strides[i]
             dilation = self.dilations[i]
-            res_layer = ResLayer()
+            res_layer = ResLayer(
+                block=self.block,
+                num_blocks=num_blocks,
+                out_channels=_out_channels,
+                expansion=self.expansion,
+                stride=stride,
+                avg_down=avg_down,
+                dilation=dilation,
+            )
+            _
+
+
