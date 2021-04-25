@@ -8,7 +8,7 @@ from Involution import Invo2D
 
 
 class Bottleneck(layers.Layer):
-    def __init__(self, out_channels, expansion, stride, downsample=None):
+    def __init__(self, out_channels, expansion, stride, downsample=None, **kwargs):
         """
         resnet中的每一个小块，对于resnet26，有26个此部分
         :param out_channels: 多少个核
@@ -20,7 +20,7 @@ class Bottleneck(layers.Layer):
         self.out_channels = out_channels
         self.expansion = expansion
         assert out_channels % expansion == 0, 'in Rednet.Bottleneck, something is wrong'
-        self.mid_channels = out_channels / expansion
+        self.mid_channels = out_channels // expansion
         self.stride = stride
         self.conv1_stride = 1
         self.conv2_stride = stride
@@ -33,7 +33,11 @@ class Bottleneck(layers.Layer):
             use_bias=False,
         )
         self.norm1 = keras.layers.BatchNormalization(name='norm1')
-        self.conv2 = Invo2D()
+        self.conv2 = Invo2D(
+            filters=self.mid_channels,
+            stride=self.conv2_stride,
+            kernel_size=7,
+        )
         self.norm2 = keras.layers.BatchNormalization(name='norm2')
         self.conv3 = keras.layers.Conv2D(
             filters=self.out_channels,
@@ -41,7 +45,7 @@ class Bottleneck(layers.Layer):
             use_bias=False,
         )
         self.norm3 = keras.layers.BatchNormalization(name='norm3')
-        self.relu = keras.activations.relu()
+        self.relu = keras.activations.relu
 
 
     def call(self, inputs, **kwargs):
@@ -143,7 +147,7 @@ class RedNet(models.Model):
             expansion=None,
             num_stages=4,
             strides=(1, 2, 2, 2),
-            dilations=(1, 1, 1, 1),
+            paddings=(1, 1, 1, 1),
             out_indices=(3, ),
             avg_down=False,
             frozen_stages=-1,
@@ -164,12 +168,12 @@ class RedNet(models.Model):
         self.block, stage_blocks = self.arch_settings[depth]
         self.stage_blocks = stage_blocks[: num_stages]
         self.strides = strides
-        self.dilations = dilations
+        self.paddings = paddings
         self.expansion = get_expansion(self.block, expansion)
         _out_channels = base_channels * self.expansion
         for i, num_blocks in enumerate(self.stage_blocks):
             stride = self.strides[i]
-            dilation = self.dilations[i]
+            padding = self.paddings[i]
             res_layer = ResLayer(
                 block=self.block,
                 num_blocks=num_blocks,
@@ -177,8 +181,28 @@ class RedNet(models.Model):
                 expansion=self.expansion,
                 stride=stride,
                 avg_down=avg_down,
-                dilation=dilation,
+                padding=padding,
             )
-            _
+
+
+def test():
+    # test ResLayer
+    stride = 2
+    padding = 1
+    num_blocks = 2
+    reslayer = ResLayer(
+        block=Bottleneck,
+        num_blocks=num_blocks,
+        out_channels=64*4,
+        expansion=4,
+        strides=stride,
+        avg_down=False,
+        padding=padding
+    )
+
+
+
+if __name__ == '__main__':
+    test()
 
 
