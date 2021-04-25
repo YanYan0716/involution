@@ -3,7 +3,6 @@ import tensorflow.keras as keras
 import tensorflow.keras.layers as layers
 from tensorflow.keras import models
 
-
 from Involution import Invo2D
 
 
@@ -47,7 +46,6 @@ class Bottleneck(layers.Layer):
         self.norm3 = keras.layers.BatchNormalization(name='norm3')
         self.relu = keras.activations.relu
 
-
     def call(self, inputs, **kwargs):
         identity = inputs
 
@@ -61,9 +59,9 @@ class Bottleneck(layers.Layer):
 
         out = self.conv3(out)
         out = self.norm3(out)
-
         if self.downsample is not None:
-            identity = self.downsample(inputs)
+            for i in range(len(self.downsample)):
+                identity = self.downsample[i](identity)
 
         out += identity
         out = self.relu(out)
@@ -100,42 +98,43 @@ class ResLayer(layers.Layer):
         super(ResLayer, self).__init__()
         self.block = block
         self.expansion = get_expansion(block, expansion)
+        self.downsample = None
+        self.layers = []
 
-        downsample = None
         if stride != 1 or in_channels != out_channels:
-            downsample = []
+            self.downsample = []
             conv_stride = stride
             if avg_down and stride != 1:
                 conv_stride = 1
-                downsample.append(
+                self.downsample.append(
                     keras.layers.AvgPool2D(pool_size=stride, strides=stride, padding=False)
                 )
-            downsample.extend([
-                keras.layers.Conv2D(filters=out_channels, kernel_size=1, strides=conv_stride, use_bias=False)
+            self.downsample.extend([
+                keras.layers.Conv2D(filters=out_channels, kernel_size=1, strides=conv_stride, use_bias=False),
                 keras.layers.BatchNormalization(),
             ])
 
-            layers = []
-            layers.append(
+        self.layers.append(
+            block(
+                out_channels=out_channels,
+                expansion=self.expansion,
+                stride=stride,
+                downsample=self.downsample,
+            )
+        )
+        for i in range(1, num_blocks):
+            self.layers.append(
                 block(
                     out_channels=out_channels,
                     expansion=self.expansion,
-                    stride=stride,
-                    downsample=downsample,
+                    stride=1,
                 )
             )
-            for i in range(1, num_blocks):
-                layers.append(
-                    block(
-                        out_channels=out_channels,
-                        expansion=self.expansion,
-                        stride=1,
-                        downsample=downsample
-                    )
-                )
 
     def call(self, inputs, **kwargs):
-        pass
+        for i in range(len(self.layers)):
+            inputs = self.layers[i](inputs)
+        return inputs
 
 
 class RedNet(models.Model):
@@ -148,10 +147,7 @@ class RedNet(models.Model):
             num_stages=4,
             strides=(1, 2, 2, 2),
             paddings=(1, 1, 1, 1),
-            out_indices=(3, ),
             avg_down=False,
-            frozen_stages=-1,
-            zero_init_residual=True,
     ):
         super(RedNet, self).__init__()
         self.arch_settings = {
@@ -170,6 +166,8 @@ class RedNet(models.Model):
         self.strides = strides
         self.paddings = paddings
         self.expansion = get_expansion(self.block, expansion)
+        self.RedNet = []
+        _in_channels = stem_channels
         _out_channels = base_channels * self.expansion
         for i, num_blocks in enumerate(self.stage_blocks):
             stride = self.strides[i]
@@ -177,32 +175,42 @@ class RedNet(models.Model):
             res_layer = ResLayer(
                 block=self.block,
                 num_blocks=num_blocks,
+                in_channels=_in_channels,
                 out_channels=_out_channels,
                 expansion=self.expansion,
                 stride=stride,
                 avg_down=avg_down,
                 padding=padding,
             )
+            _in_channels = _out_channels
+            _out_channels *= 2
+            self.RedNet.append(res_layer)
+
+    def call(self, inputs, training=None, mask=None):
+        for i in range(len(self.RedNet)):
+            inputs = self.RedNet[i](inputs)
+        return inputs
 
 
 def test():
+    import numpy as np
+    img = tf.convert_to_tensor(np.random.random(size=(2, 224, 224, 64)), dtype=tf.float32)
     # test ResLayer
-    stride = 2
-    padding = 1
-    num_blocks = 2
-    reslayer = ResLayer(
-        block=Bottleneck,
-        num_blocks=num_blocks,
-        out_channels=64*4,
-        expansion=4,
-        strides=stride,
-        avg_down=False,
-        padding=padding
-    )
-
+    # reslayer = ResLayer(
+    #     block=Bottleneck,
+    #     num_blocks=1,
+    #     in_channels=64,
+    #     out_channels=128,
+    #     expansion=4,
+    #     strides=2,
+    #     avg_down=True,
+    #     padding=1
+    # )
+    # y = reslayer(img)
+    a=RedNet(depth=26)
+    y=a(img)
+    print(y.shape)
 
 
 if __name__ == '__main__':
     test()
-
-
