@@ -6,6 +6,9 @@ from tensorflow.keras import models
 from Involution import Invo2D
 
 
+import config
+
+
 class Bottleneck(layers.Layer):
     def __init__(self, out_channels, expansion, stride, downsample=None, **kwargs):
         """
@@ -191,10 +194,14 @@ class RedNet(models.Model):
             inputs = self.RedNet[i](inputs)
         return inputs
 
+    def model(self):
+        input = keras.Input(shape=(config.CROP_SIZE, config.CROP_SIZE, 3), dtype=tf.float32)
+        return keras.Model(inputs=input, outputs=self.call(input))
+
 
 def test():
     import numpy as np
-    img = tf.convert_to_tensor(np.random.random(size=(2, 224, 224, 64)), dtype=tf.float32)
+    img = tf.convert_to_tensor(np.random.random(size=(2, 224, 224, 32)), dtype=tf.float32)
     # test ResLayer
     # reslayer = ResLayer(
     #     block=Bottleneck,
