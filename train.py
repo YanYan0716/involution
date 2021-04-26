@@ -6,7 +6,7 @@ import pandas as pd
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 from Rednet import RedNet
-from Dataset import label_image
+from Dataset import train_image, test_image
 import config
 
 
@@ -19,7 +19,7 @@ if __name__ == '__main__':
     labels = df_label['label'].values
     ds_label_train = tf.data.Dataset.from_tensor_slices((file_paths, labels))
     ds_label_train = ds_label_train\
-        .map(label_image, num_parallel_calls=AUTOTUNE)\
+        .map(train_image, num_parallel_calls=AUTOTUNE)\
         .shuffle(config.SHUFFLE_BUFFER)\
         .batch(config.BATCH_SIZE)
 
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     labels_test = df_test['label'].values
     ds_label_test = tf.data.Dataset.from_tensor_slices((file_test, labels_test))
     ds_label_test = ds_label_test \
-        .map(label_image, num_parallel_calls=AUTOTUNE) \
+        .map(test_image, num_parallel_calls=AUTOTUNE) \
         .batch(config.BATCH_SIZE)
 
     # 定义模型
