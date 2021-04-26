@@ -7,7 +7,7 @@ CROP = 32  # 384
 ROOT_PATH = ''
 TRAIN_PATH = '../input/cifar10/cifar/train.csv'  # kaggle
 # TRAIN_PATH = '/content/cifar/train.csv'  # google
-BATCH_SIZE = 128  # 512
+BATCH_SIZE = 64  # 512
 SHUFFLE_BUFFER = 50000
 
 # model
