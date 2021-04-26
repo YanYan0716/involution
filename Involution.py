@@ -38,7 +38,7 @@ class Invo2D(Layer):
         weights = tf.transpose(weights, perm=[0, 3, 1, 2])
         weights = tf.reshape(
             tensor=weights,
-            shape=(b, self.group, self.kernel_size ** 2, h, w)
+            shape=(-1, self.group, self.kernel_size ** 2, h, w)
         )
         weights = tf.expand_dims(weights, axis=2)
         out = tf.image.extract_patches(
