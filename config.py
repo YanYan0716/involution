@@ -7,7 +7,7 @@ CROP = 32  # 384
 ROOT_PATH = ''
 # TRAIN_PATH = '../input/cifar10/cifar/train.csv'  # kaggle
 TRAIN_PATH = '/content/cifar/train.csv'  # google
-BATCH_SIZE = 32  # 512
+BATCH_SIZE = 128  # 512
 SHUFFLE_BUFFER = 50000
 
 # model
@@ -27,5 +27,5 @@ LOAD_PATH = '/content/drive/MyDrive/weights/Invo'
 
 # evaluate
 LOG_EPOCH = 2
-LOG_LOSS = 200
+LOG_LOSS = 100
 SAVE_PATH = '/content/drive/MyDrive/weights/Invo'

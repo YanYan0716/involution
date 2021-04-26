@@ -55,10 +55,10 @@ if __name__ == '__main__':
             LOSS_SUM += loss
             LOSS_AVG = LOSS_SUM / (idx + 1)
             if idx % config.LOG_EPOCH == 0:
-                print(f'[{epoch}/{config.TOTAL_EPOCHS}] {idx} loss: {loss:.3f} / {LOSS_AVG:.3f}')
+                print(f'[{epoch:4d}/{config.TOTAL_EPOCHS:4d}] {idx:4d} loss: {loss:.3f} / {LOSS_AVG:.3f}')
 
         train_acc = acc_metric.result()
-        print(f'[{epoch}/{config.TOTAL_EPOCHS}] train acc {train_acc:.3f}')
+        print(f'[{epoch:4d}/{config.TOTAL_EPOCHS:4d}] train acc {train_acc:.3f}')
         acc_metric.reset_states()
 
         # 每训练两次测试
@@ -70,7 +70,7 @@ if __name__ == '__main__':
                     acc_metric.update_state(label, y_pred)
 
             test_acc = acc_metric.result()
-            print(f'test acc {test_acc}, best acc {BEST_ACC}')
+            print(f'test acc {test_acc:.3f}, best acc {BEST_ACC:.3f}')
             acc_metric.reset_states()
             # 保存模型
             if test_acc > BEST_ACC:
