@@ -21,8 +21,6 @@ class Invo2D(Layer):
             filters=filters // reduction_ratio,
             kernel_size=1,
         )
-        self.norm1 = keras.layers.BatchNormalization()
-        self.relu1 = keras.activations.relu
 
         self.conv2 = keras.layers.Conv2D(
             filters=self.kernel_size ** 2 * self.group,
