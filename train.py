@@ -15,7 +15,7 @@ if __name__ == '__main__':
     # 加载数据集
     AUTOTUNE = tf.data.experimental.AUTOTUNE
     df_label = pd.read_csv(config.TRAIN_PATH)
-    file_paths = df_label['file_name'].values
+    file_paths = df_label['name'].values
     labels = df_label['label'].values
     ds_label_train = tf.data.Dataset.from_tensor_slices((file_paths, labels))
     ds_label_train = ds_label_train\
