@@ -5,7 +5,6 @@ from tensorflow.keras import models
 
 from Involution import Invo2D
 
-
 import config
 
 
@@ -172,6 +171,10 @@ class RedNet(models.Model):
         self.RedNet = []
         _in_channels = stem_channels
         _out_channels = base_channels * self.expansion
+        self.flatten = keras.layers.Flatten()
+        self.classifier = keras.layers.Dense(
+            units=config.NUM_CLASSES,
+        )
         for i, num_blocks in enumerate(self.stage_blocks):
             stride = self.strides[i]
             padding = self.paddings[i]
@@ -192,7 +195,8 @@ class RedNet(models.Model):
     def call(self, inputs, training=None, mask=None):
         for i in range(len(self.RedNet)):
             inputs = self.RedNet[i](inputs)
-        return inputs
+        out = self.classifier(self.flatten(inputs))
+        return out
 
     def model(self):
         input = keras.Input(shape=(config.CROP_SIZE, config.CROP_SIZE, 3), dtype=tf.float32)
@@ -214,8 +218,8 @@ def test():
     #     padding=1
     # )
     # y = reslayer(img)
-    a=RedNet(depth=26)
-    y=a(img)
+    a = RedNet(depth=26)
+    y = a(img)
     print(y.shape)
 
 
