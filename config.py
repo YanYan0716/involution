@@ -2,8 +2,8 @@ import tensorflow as tf
 DTYPE = tf.float32
 
 # dataset
-RESIZE = 256  # 512
-CROP = 224  # 384
+RESIZE = 36  # 512
+CROP = 32  # 384
 ROOT_PATH = '../cifar'
 TRAIN_PATH = '../input/cifar10/cifar/train.csv'  # kaggle
 # TRAIN_PATH = '/content/cifar/train.csv'  # google

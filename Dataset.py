@@ -48,7 +48,7 @@ if __name__ == '__main__':
     labels = df_label['label'].values
     ds_label_train = tf.data.Dataset.from_tensor_slices((file_paths, labels))
     ds_label_train = ds_label_train\
-        .map(label_image, num_parallel_calls=AUTOTUNE)\
+        .map(train_image, num_parallel_calls=AUTOTUNE)\
         .batch(1)\
         .shuffle(1)
     for data in ds_label_train:

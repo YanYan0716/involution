@@ -205,7 +205,7 @@ class RedNet(models.Model):
 
 def test():
     import numpy as np
-    img = tf.convert_to_tensor(np.random.random(size=(2, 224, 224, 32)), dtype=tf.float32)
+    img = tf.convert_to_tensor(np.random.random(size=(2, 32, 32, 32)), dtype=tf.float32)
     # test ResLayer
     # reslayer = ResLayer(
     #     block=Bottleneck,
