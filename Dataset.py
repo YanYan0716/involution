@@ -10,7 +10,7 @@ import config
 
 def train_image(img_file, label):
     # 对图片的处理
-    img = tf.io.read_file(os.path.join(config.ROOT_PATH, img_file))
+    img = tf.io.read_file(img_file)
     img = tf.image.decode_jpeg(img, channels=3)
     img = tf.image.random_flip_left_right(img)
     img = tf.image.resize(img, (config.RESIZE, config.RESIZE))
@@ -21,12 +21,12 @@ def train_image(img_file, label):
     img = (img-mean)/std
 
     label = tf.cast(label, dtype=config.DTYPE)
-    return img, label
+    return (img, label)
 
 
 def test_image(img_file, label):
     # 对图片的处理
-    img = tf.io.read_file(os.path.join(config.ROOT_PATH, img_file))
+    img = tf.io.read_file(img_file)
     img = tf.image.decode_jpeg(img, channels=3)
     img = tf.image.resize(img, (config.CROP, config.CROP))
     img = tf.cast(img, config.DTYPE) / 255.0
@@ -35,7 +35,7 @@ def test_image(img_file, label):
     img = (img-mean)/std
 
     label = tf.cast(label, dtype=config.DTYPE)
-    return img, label
+    return (img, label)
 
 
 if __name__ == '__main__':

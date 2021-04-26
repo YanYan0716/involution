@@ -1,9 +1,9 @@
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import tensorflow as tf
 import tensorflow.keras as keras
 import pandas as pd
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 from Rednet import RedNet
 from Dataset import train_image, test_image

@@ -199,7 +199,7 @@ class RedNet(models.Model):
         return out
 
     def model(self):
-        input = keras.Input(shape=(config.CROP_SIZE, config.CROP_SIZE, 3), dtype=tf.float32)
+        input = keras.Input(shape=(config.CROP, config.CROP, 3), dtype=tf.float32)
         return keras.Model(inputs=input, outputs=self.call(input))
 
 
