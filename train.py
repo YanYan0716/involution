@@ -54,7 +54,7 @@ if __name__ == '__main__':
             acc_metric.update_state(label, y_pred)
             LOSS_SUM += loss
             LOSS_AVG = LOSS_SUM / (idx + 1)
-            if idx % config.LOG_EPOCH == 0:
+            if idx % config.LOG_LOSS == 0:
                 print(f'[{epoch:4d}/{config.TOTAL_EPOCHS:4d}] {idx:4d} loss: {loss:.3f} / {LOSS_AVG:.3f}')
 
         train_acc = acc_metric.result()
