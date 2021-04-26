@@ -47,9 +47,9 @@ class Invo2D(Layer):
             padding='SAME'
         )
         out = tf.transpose(out, perm=[0, 3, 1, 2])
-        out = tf.reshape(out, shape=(b, self.group, self.group_channels, self.kernel_size ** 2, h, w))
+        out = tf.reshape(out, shape=(-1, self.group, self.group_channels, self.kernel_size ** 2, h, w))
         out = tf.math.multiply(weights, out)
-        out = tf.reshape(tf.reduce_sum(out, axis=3), shape=(b, self.filters, h, w))
+        out = tf.reshape(tf.reduce_sum(out, axis=3), shape=(-1, self.filters, h, w))
         out = tf.transpose(out, perm=[0, 2, 3, 1])
         return out
 
