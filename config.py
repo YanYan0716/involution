@@ -28,4 +28,4 @@ LOAD_PATH = './weights/Invo'
 # evaluate
 LOG_EPOCH = 2
 LOG_LOSS = 100
-SAVE_PATH = '/content/drive/MyDrive/weights/Invo'
+SAVE_PATH = './weights/Invo'
