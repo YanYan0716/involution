@@ -35,12 +35,12 @@ if __name__ == '__main__':
     net = RedNet(depth=26).model()
 
     # schedules
-    lr_schedule = keras.optimizers.schedules.ExponentialDecay(
-        initial_learning_rate=config.BASE_LR,
-        decay_rate=0.96,
-        decay_steps=5000,
-    )
-    optimizer = keras.optimizers.Adam(lr=lr_schedule)
+    # lr_schedule = keras.optimizers.schedules.ExponentialDecay(
+    #     initial_learning_rate=config.BASE_LR,
+    #     decay_rate=0.96,
+    #     decay_steps=5000,
+    # )
+    optimizer = keras.optimizers.Adam(lr=config.BASE_LR)
     loss_fn = keras.losses.SparseCategoricalCrossentropy(from_logits=True)
     acc_metric = keras.metrics.SparseCategoricalAccuracy()
     print('ok')
