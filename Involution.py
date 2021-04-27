@@ -9,6 +9,12 @@ from tensorflow.keras.layers import Layer
 
 class Invo2D(Layer):
     def __init__(self, filters, kernel_size, stride):
+        """
+        要保证inputs中channels的数值和filters的数值一致
+        :param filters:
+        :param kernel_size:
+        :param stride:
+        """
         super(Invo2D, self).__init__()
         self.kernel_size = kernel_size
         self.filters = filters
@@ -60,10 +66,10 @@ def test():
     # img = tf.convert_to_tensor(np.random.random(size=(2, 3, 4, 5)))
     # y = tf.image.extract_patches(
     #     images=img,
-    #     sizes=[1, 2, 3, 1],
+    #     sizes=[1, 2, 2, 1],
     #     strides=[1, 1, 1, 1],
     #     rates=[1, 1, 1, 1],
-    #     padding='VALID'
+    #     padding='SAME'
     # )
     img = tf.convert_to_tensor(np.random.random(size=(2, 16, 16, 128)), dtype=tf.float32)
     Involayer = Invo2D(filters=128, kernel_size=7, stride=1)
